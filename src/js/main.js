@@ -5,6 +5,7 @@ const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
 const profileContainer = document.getElementById('profile-container');
 const repoContainer = document.getElementById('repo-container');
+const langStatsContainer = document.getElementById('lang-stats-container');
 const loadingSpinner = document.getElementById('loading-spinner');
 const errorMessage = document.getElementById('error-message');
 
@@ -25,10 +26,12 @@ function setError(msg) {
   errorMessage.classList.toggle('hidden', !msg);
 }
 
-/* Clear both result containers */
+/* Clear all result containers */
 function clearResults() {
   profileContainer.innerHTML = '';
   repoContainer.innerHTML = '';
+  langStatsContainer.innerHTML = '';
+  langStatsContainer.classList.add('hidden');
 }
 
 /* ── Render user profile card ── */
@@ -124,6 +127,37 @@ function renderRepoList(repos) {
   });
 }
 
+/* ── Render language stats ── */
+
+/* Render a bar chart showing language distribution */
+function renderLanguageStats(stats) {
+  if (stats.length === 0) {
+    langStatsContainer.classList.add('hidden');
+    return;
+  }
+
+  langStatsContainer.classList.remove('hidden');
+  langStatsContainer.innerHTML = `
+    <h3 class="lang-stats-heading">Languages</h3>
+    <div class="lang-stats-list">
+      ${stats.map(({ language, count, percentage, color }) => `
+        <div class="lang-stat-item">
+          <div class="lang-stat-header">
+            <span class="lang-stat-name">
+              <span class="lang-stat-dot" style="background:${color}"></span>
+              ${language}
+            </span>
+            <span class="lang-stat-count">${count} (${percentage}%)</span>
+          </div>
+          <div class="lang-stat-bar-bg">
+            <div class="lang-stat-bar-fill" style="width:${percentage}%;background:${color}"></div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
 /* ── Search flow ── */
 
 /* The main search handler now fetches both user profile and repos */
@@ -152,6 +186,7 @@ async function handleSearch() {
 
     renderUserProfile(userData);
     renderRepoList(repos);
+    renderLanguageStats(calculateLanguageStats(repos));
   } catch (err) {
     setError(err.message);
   } finally {
