@@ -1,4 +1,4 @@
-/* Stats module — language breakdown computation */
+/* Stats module — language breakdown & quick stats computation */
 
 /* Language → colour map matching GitHub’s popular-language colours */
 const LANG_COLORS = {
@@ -55,4 +55,26 @@ function calculateLanguageStats(repos) {
       color: LANG_COLORS[language] || FALLBACK_COLOR,
     }))
     .sort((a, b) => b.count - a.count);
+}
+
+/* Compute quick insight stats from the repo list.
+ * Returns { languageCount, topRepo, totalForks } */
+function calculateQuickStats(repos) {
+  const languageSet = new Set();
+  let topRepo = null;
+  let totalForks = 0;
+
+  repos.forEach(repo => {
+    if (repo.language) languageSet.add(repo.language);
+    if (!topRepo || repo.stargazers_count > topRepo.stargazers_count) {
+      topRepo = repo;
+    }
+    totalForks += repo.forks_count;
+  });
+
+  return {
+    languageCount: languageSet.size,
+    topRepo: topRepo ? { name: topRepo.name, stars: topRepo.stargazers_count, url: topRepo.html_url } : null,
+    totalForks,
+  };
 }
