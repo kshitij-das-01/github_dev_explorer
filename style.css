@@ -118,6 +118,85 @@ main {
   margin-bottom: 1.5rem;
 }
 
+/* ── Profile card ── */
+
+/* Flex layout: avatar left, info center, stats right */
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* Circular avatar image */
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+}
+
+/* Middle column: name, username, bio */
+.profile-info {
+  flex: 1;
+  min-width: 180px;
+}
+
+.profile-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.profile-username {
+  color: #586069;
+  font-size: 1.1rem;
+  margin-bottom: 0.4rem;
+}
+
+.profile-bio {
+  font-size: 0.95rem;
+  color: #444d56;
+  line-height: 1.5;
+}
+
+/* Stats row: repos / followers / following */
+.profile-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #586069;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Stack profile card vertically on narrow screens */
+@media (max-width: 600px) {
+  .profile-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-stats {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* Responsive: stack search bar and shrink text on small screens */
 @media (max-width: 600px) {
   header h1 {
