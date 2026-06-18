@@ -84,6 +84,24 @@ main {
   background-color: #0256b9;
 }
 
+/* Secondary / Clear button */
+.btn-secondary {
+  padding: 0.75rem 1.25rem;
+  background-color: var(--white);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: #f3f4f6;
+  border-color: #c8ccd0;
+}
+
 /* Utility: hide elements while preserving in DOM */
 .hidden {
   display: none;
@@ -298,12 +316,19 @@ main {
 
 /* Individual repo card */
 .repo-item {
-  padding: 1rem 0;
+  padding: 1rem;
+  margin: 0 -0.5rem;
+  border-radius: 6px;
   border-bottom: 1px solid var(--border);
+  transition: background-color 0.15s ease;
 }
 
 .repo-item:last-child {
   border-bottom: none;
+}
+
+.repo-item:hover {
+  background-color: #f6f8fa;
 }
 
 /* Repo name as a link */
@@ -369,7 +394,8 @@ main {
     flex-direction: column;
   }
 
-  #search-btn {
+  #search-btn,
+  .btn-secondary {
     width: 100%;
   }
 }
