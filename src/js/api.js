@@ -20,3 +20,19 @@ async function fetchGitHubUser(username) {
 
   return response.json();
 }
+
+/* Fetch public repos for a user (up to 100 per page).
+ * Returns an array of repo objects.
+ * Throws on rate-limit or network errors. */
+async function fetchUserRepos(username) {
+  const response = await fetch(`${API_BASE}/users/${username}/repos?per_page=100&sort=updated`);
+
+  if (!response.ok) {
+    if (response.status === 403) {
+      throw new Error('API rate limit exceeded. Try again later.');
+    }
+    throw new Error(`Failed to fetch repos (${response.status})`);
+  }
+
+  return response.json();
+}

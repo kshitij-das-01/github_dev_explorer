@@ -4,8 +4,13 @@
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
 const profileContainer = document.getElementById('profile-container');
+const repoContainer = document.getElementById('repo-container');
 const loadingSpinner = document.getElementById('loading-spinner');
 const errorMessage = document.getElementById('error-message');
+
+/* ── State ── */
+let allRepos = [];           /* Cached repo list for current user */
+let currentSort = 'name';    /* Active sort key */
 
 /* ── Helpers ── */
 
@@ -20,9 +25,10 @@ function setError(msg) {
   errorMessage.classList.toggle('hidden', !msg);
 }
 
-/* Clear the profile container */
-function clearProfile() {
+/* Clear both result containers */
+function clearResults() {
   profileContainer.innerHTML = '';
+  repoContainer.innerHTML = '';
 }
 
 /* ── Render user profile card ── */
@@ -53,7 +59,74 @@ function renderUserProfile(user) {
   `;
 }
 
+/* ── Sorting ── */
+
+/* Return a copy of repos sorted by the active sort key */
+function getSortedRepos() {
+  const sorted = [...allRepos];
+  switch (currentSort) {
+    case 'name':
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+      break;
+    case 'stars':
+      sorted.sort((a, b) => b.stargazers_count - a.stargazers_count);
+      break;
+    case 'updated':
+      sorted.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+      break;
+  }
+  return sorted;
+}
+
+/* ── Render repo list ── */
+
+/* Inject sort controls and the repo list into #repo-container */
+function renderRepoList(repos) {
+  if (repos.length === 0) {
+    repoContainer.innerHTML = '<p class="empty-msg">No public repositories found.</p>';
+    return;
+  }
+
+  /* If user has more than 100, show a note that results are limited */
+  const oversizeNote = repos.length >= 100
+    ? '<p class="oversize-note">Showing up to 100 repos. Use a token for full access.</p>'
+    : '';
+
+  repoContainer.innerHTML = `
+    ${oversizeNote}
+    <div class="repo-controls">
+      <label for="sort-select">Sort:</label>
+      <select id="sort-select">
+        <option value="name" ${currentSort === 'name' ? 'selected' : ''}>Name (A-Z)</option>
+        <option value="stars" ${currentSort === 'stars' ? 'selected' : ''}>Stars (high-to-low)</option>
+        <option value="updated" ${currentSort === 'updated' ? 'selected' : ''}>Updated (newest-to-oldest)</option>
+      </select>
+    </div>
+    <ul class="repo-list">
+      ${getSortedRepos().map(repo => `
+        <li class="repo-item">
+          <a class="repo-name" href="${repo.html_url}" target="_blank" rel="noopener">${repo.name}</a>
+          <p class="repo-desc">${repo.description || 'No description provided.'}</p>
+          <div class="repo-meta">
+            ${repo.language ? `<span class="repo-lang">${repo.language}</span>` : ''}
+            <span class="repo-stars">★ ${repo.stargazers_count}</span>
+            <span class="repo-forks">⑂ ${repo.forks_count}</span>
+          </div>
+        </li>
+      `).join('')}
+    </ul>
+  `;
+
+  /* Bind change handler to the sort dropdown */
+  document.getElementById('sort-select').addEventListener('change', (e) => {
+    currentSort = e.target.value;
+    renderRepoList(allRepos);
+  });
+}
+
 /* ── Search flow ── */
+
+/* The main search handler now fetches both user profile and repos */
 async function handleSearch() {
   const username = searchInput.value.trim();
 
@@ -64,12 +137,21 @@ async function handleSearch() {
 
   /* Reset UI before fetching */
   setError(null);
-  clearProfile();
+  clearResults();
   setLoading(true);
 
   try {
-    const userData = await fetchGitHubUser(username);
+    /* Fetch both endpoints in parallel for speed */
+    const [userData, repos] = await Promise.all([
+      fetchGitHubUser(username),
+      fetchUserRepos(username),
+    ]);
+
+    allRepos = repos;
+    currentSort = 'name';
+
     renderUserProfile(userData);
+    renderRepoList(repos);
   } catch (err) {
     setError(err.message);
   } finally {
