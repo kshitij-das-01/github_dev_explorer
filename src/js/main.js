@@ -4,44 +4,49 @@
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
 const clearBtn = document.getElementById('clear-btn');
+const retryBtn = document.getElementById('retry-btn');
 const themeToggle = document.getElementById('theme-toggle');
 const profileContainer = document.getElementById('profile-container');
 const repoContainer = document.getElementById('repo-container');
 const langStatsContainer = document.getElementById('lang-stats-container');
 const quickStatsContainer = document.getElementById('quick-stats');
+const activityBar = document.getElementById('activity-bar');
 const loadingSpinner = document.getElementById('loading-spinner');
 const errorMessage = document.getElementById('error-message');
+const errorText = errorMessage.querySelector('.error-text');
 const skeletonProfile = document.getElementById('skeleton-profile');
 const skeletonRepos = document.getElementById('skeleton-repos');
+const tokenInput = document.getElementById('token-input');
+const tokenSaveBtn = document.getElementById('token-save-btn');
+const tokenClearBtn = document.getElementById('token-clear-btn');
 
 /* ── State ── */
 let allRepos = [];
 let currentSort = 'name';
-let langChart = null;        /* Chart.js instance */
+let langChart = null;
+let lastSearchTerm = '';
+const REPOS_PER_PAGE = 9;
+let repoVisibleCount = REPOS_PER_PAGE;
 
 /* ══════════════════════════════════════════════════════════════
    Theme Engine
    ══════════════════════════════════════════════════════════════ */
 
-/* Detect system preference */
 function getSystemTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
-/* Apply theme and save to localStorage */
 function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
   localStorage.setItem('theme', theme);
 }
 
-/* Toggle between dark and light */
 function toggleTheme() {
   const current = document.documentElement.getAttribute('data-theme');
   setTheme(current === 'dark' ? 'light' : 'dark');
 }
 
-/* Initialise theme on load */
 function initTheme() {
   const saved = localStorage.getItem('theme');
   if (saved) {
@@ -49,7 +54,6 @@ function initTheme() {
   } else {
     setTheme(getSystemTheme());
   }
-  /* Listen for system preference changes */
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
     if (!localStorage.getItem('theme')) {
       setTheme(e.matches ? 'dark' : 'light');
@@ -68,8 +72,13 @@ function setLoading(visible) {
 }
 
 function setError(msg) {
-  errorMessage.textContent = msg || '';
-  errorMessage.classList.toggle('hidden', !msg);
+  if (msg) {
+    errorText.textContent = msg;
+    errorMessage.classList.remove('hidden');
+  } else {
+    errorText.textContent = '';
+    errorMessage.classList.add('hidden');
+  }
 }
 
 function clearResults() {
@@ -79,7 +88,7 @@ function clearResults() {
   langStatsContainer.classList.add('hidden');
   quickStatsContainer.innerHTML = '';
   quickStatsContainer.classList.add('hidden');
-  /* Destroy Chart.js instance if it exists */
+  activityBar.classList.add('hidden');
   if (langChart) {
     langChart.destroy();
     langChart = null;
@@ -93,6 +102,17 @@ function resetApp() {
   searchInput.value = '';
   allRepos = [];
   currentSort = 'name';
+  lastSearchTerm = '';
+}
+
+/* Brief success pulse on the search section */
+function flashSuccess() {
+  const section = searchBtn.closest('.search-section');
+  section.classList.remove('search-section--success');
+  /* Force reflow to restart the animation */
+  void section.offsetWidth;
+  section.classList.add('search-section--success');
+  setTimeout(() => section.classList.remove('search-section--success'), 700);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -102,7 +122,7 @@ function resetApp() {
 function renderUserProfile(user) {
   profileContainer.innerHTML = `
     <div class="profile-card">
-      <img class="profile-avatar" src="${user.avatar_url}" alt="${user.login}" />
+      <img class="profile-avatar" src="${user.avatar_url}" alt="Avatar of ${user.login}" />
       <div class="profile-info">
         <h2 class="profile-name">${user.name || user.login}</h2>
         <p class="profile-username">@${user.login}</p>
@@ -169,14 +189,14 @@ function renderLanguageStats(stats) {
   langStatsContainer.innerHTML = `
     <h3 class="lang-stats-heading">Languages</h3>
     <div class="lang-chart-wrapper">
-      <canvas id="lang-chart"></canvas>
+      <canvas id="lang-chart" aria-label="Language distribution doughnut chart" role="img"></canvas>
     </div>
     <div class="lang-stats-list">
       ${stats.map(({ language, count, percentage, color }) => `
         <div class="lang-stat-item">
           <div class="lang-stat-header">
             <span class="lang-stat-name">
-              <span class="lang-stat-dot" style="background:${color}"></span>
+              <span class="lang-stat-dot" style="background:${color}" aria-hidden="true"></span>
               ${language}
             </span>
             <span class="lang-stat-count">${count} (${percentage}%)</span>
@@ -189,7 +209,6 @@ function renderLanguageStats(stats) {
     </div>
   `;
 
-  /* Build Chart.js doughnut chart */
   const ctx = document.getElementById('lang-chart').getContext('2d');
   if (langChart) langChart.destroy();
 
@@ -240,10 +259,9 @@ function getSortedRepos() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   Render: Repo List
+   Render: Repo List (with staggered animation)
    ══════════════════════════════════════════════════════════════ */
 
-/* Get language badge color from the LANG_COLORS map */
 function getLangColor(language) {
   return LANG_COLORS[language] || FALLBACK_COLOR;
 }
@@ -258,6 +276,10 @@ function renderRepoList(repos) {
     ? '<p class="oversize-note">Showing up to 100 repos. Use a token for full access.</p>'
     : '';
 
+  const sortedRepos = getSortedRepos();
+  const visibleRepos = sortedRepos.slice(0, repoVisibleCount);
+  const hasMore = repoVisibleCount < sortedRepos.length;
+
   repoContainer.innerHTML = `
     ${oversizeNote}
     <div class="repo-controls">
@@ -269,10 +291,11 @@ function renderRepoList(repos) {
       </select>
     </div>
     <ul class="repo-list">
-      ${getSortedRepos().map(repo => {
+      ${visibleRepos.map((repo, i) => {
         const langColor = repo.language ? getLangColor(repo.language) : null;
+        const highStars = repo.stargazers_count >= 100;
         return `
-          <li class="repo-item">
+          <li class="repo-item" style="--i:${i}" ${highStars ? 'data-stars-high' : ''}>
             <a class="repo-name" href="${repo.html_url}" target="_blank" rel="noopener">${repo.name}</a>
             <p class="repo-desc">${repo.description || 'No description provided.'}</p>
             <div class="repo-meta">
@@ -284,43 +307,58 @@ function renderRepoList(repos) {
         `;
       }).join('')}
     </ul>
+    ${hasMore ? '<div class="show-more-wrapper"><button id="show-more-btn" class="btn-secondary">Show More</button></div>' : ''}
   `;
 
   document.getElementById('sort-select').addEventListener('change', (e) => {
     currentSort = e.target.value;
+    repoVisibleCount = REPOS_PER_PAGE;
     renderRepoList(allRepos);
   });
+
+  const showMoreBtn = document.getElementById('show-more-btn');
+  if (showMoreBtn) {
+    showMoreBtn.addEventListener('click', () => {
+      repoVisibleCount += REPOS_PER_PAGE;
+      renderRepoList(allRepos);
+    });
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════
    Search Flow
    ══════════════════════════════════════════════════════════════ */
 
-async function handleSearch() {
-  const username = searchInput.value.trim();
+async function handleSearch(username) {
+  /* Allow passing a username directly (used by retry) */
+  const term = username || searchInput.value.trim();
 
-  if (!username) {
+  if (!term) {
     setError('Please enter a GitHub username.');
     return;
   }
 
+  lastSearchTerm = term;
   setError(null);
   clearResults();
   setLoading(true);
 
   try {
     const [userData, repos] = await Promise.all([
-      fetchGitHubUser(username),
-      fetchUserRepos(username),
+      fetchGitHubUser(term),
+      fetchUserRepos(term),
     ]);
 
     allRepos = repos;
     currentSort = 'name';
+    repoVisibleCount = REPOS_PER_PAGE;
 
     renderUserProfile(userData);
     renderRepoList(repos);
     renderLanguageStats(calculateLanguageStats(repos));
     renderQuickStats(calculateQuickStats(repos));
+    activityBar.classList.remove('hidden');
+    flashSuccess();
   } catch (err) {
     setError(err.message);
   } finally {
@@ -328,16 +366,53 @@ async function handleSearch() {
   }
 }
 
+/* Retry with the last successful search term */
+function handleRetry() {
+  if (lastSearchTerm) {
+    searchInput.value = lastSearchTerm;
+    handleSearch(lastSearchTerm);
+  }
+}
+
 /* ══════════════════════════════════════════════════════════════
    Event Binding
    ══════════════════════════════════════════════════════════════ */
 
-searchBtn.addEventListener('click', handleSearch);
+searchBtn.addEventListener('click', () => handleSearch());
 clearBtn.addEventListener('click', resetApp);
+retryBtn.addEventListener('click', handleRetry);
 themeToggle.addEventListener('click', toggleTheme);
 searchInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') handleSearch();
 });
 
-/* Initialise theme on page load */
+/* ── Token management ── */
+
+/* Load saved token into input field */
+function initToken() {
+  const saved = localStorage.getItem('github_token');
+  if (saved) tokenInput.value = saved;
+}
+
+/* Save token to localStorage */
+tokenSaveBtn.addEventListener('click', () => {
+  const token = tokenInput.value.trim();
+  if (token) {
+    localStorage.setItem('github_token', token);
+    setError(null);
+    setError('✓ Token saved. Rate limit increased to 5,000 requests/hour.');
+    setTimeout(() => setError(null), 3000);
+  }
+});
+
+/* Remove saved token */
+tokenClearBtn.addEventListener('click', () => {
+  localStorage.removeItem('github_token');
+  tokenInput.value = '';
+  setError(null);
+  setError('Token removed. Using unauthenticated rate limit (60 req/hr).');
+  setTimeout(() => setError(null), 3000);
+});
+
 initTheme();
+initToken();

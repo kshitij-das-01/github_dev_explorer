@@ -9,60 +9,82 @@
 </head>
 <body>
   <!-- Sticky header with title and theme toggle -->
-  <header class="app-header">
+  <header class="app-header" role="banner">
     <div class="header-inner">
       <h1>GitHub Developer Explorer</h1>
-      <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme">🌙</button>
+      <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark and light theme" title="Toggle theme">🌙</button>
     </div>
   </header>
 
-  <main>
+  <div class="main-container">
+  <main role="main">
     <!-- Search bar and trigger buttons -->
-    <section class="search-section">
+    <section class="search-section" aria-label="Search for a GitHub user">
       <input type="text" id="search-input" placeholder="Enter GitHub username" aria-label="GitHub username">
       <button id="search-btn">Search</button>
       <button id="clear-btn" class="btn-secondary">Clear</button>
     </section>
 
+    <!-- GitHub token settings (collapsible) -->
+    <details class="token-settings">
+      <summary class="token-summary">🔑 Token (optional — raises rate limit to 5k/hr)</summary>
+      <div class="token-row">
+        <input type="password" id="token-input" placeholder="ghp_..." aria-label="GitHub personal access token">
+        <button id="token-save-btn" class="btn-secondary">Save</button>
+        <button id="token-clear-btn" class="btn-secondary">Remove</button>
+      </div>
+    </details>
+
     <!-- Loading indicator (hidden by default) -->
-    <div id="loading-spinner" class="hidden">Loading...</div>
-    <!-- Error display area (hidden by default) -->
-    <div id="error-message" class="hidden"></div>
+    <div id="loading-spinner" class="hidden" role="status" aria-live="polite">Loading...</div>
+
+    <!-- Error display area with retry button (hidden by default) -->
+    <div id="error-message" class="hidden" role="alert" aria-live="assertive">
+      <span class="error-icon">⚠️</span>
+      <span class="error-text"></span>
+      <button id="retry-btn" class="btn-secondary">Retry</button>
+    </div>
 
     <!-- Skeleton screens shown while fetching data -->
-    <div id="skeleton-profile" class="skeleton-card hidden">
+    <div id="skeleton-profile" class="skeleton-card hidden" aria-hidden="true">
       <div class="skeleton-row">
-        <div class="skeleton-avatar skeleton-pulse"></div>
+        <div class="skeleton-avatar skeleton-shimmer"></div>
         <div class="skeleton-lines">
-          <div class="skeleton-line skeleton-pulse w-50"></div>
-          <div class="skeleton-line skeleton-pulse w-30"></div>
-          <div class="skeleton-line skeleton-pulse w-70"></div>
+          <div class="skeleton-line skeleton-shimmer w-50"></div>
+          <div class="skeleton-line skeleton-shimmer w-30"></div>
+          <div class="skeleton-line skeleton-shimmer w-70"></div>
         </div>
       </div>
     </div>
-    <div id="skeleton-repos" class="skeleton-card hidden">
-      <div class="skeleton-line skeleton-pulse w-40"></div>
-      <div class="skeleton-line skeleton-pulse w-90"></div>
-      <div class="skeleton-line skeleton-pulse w-80"></div>
-      <div class="skeleton-line skeleton-pulse w-60"></div>
+    <div id="skeleton-repos" class="skeleton-card hidden" aria-hidden="true">
+      <div class="skeleton-line skeleton-shimmer w-40"></div>
+      <div class="skeleton-line skeleton-shimmer w-90"></div>
+      <div class="skeleton-line skeleton-shimmer w-80"></div>
+      <div class="skeleton-line skeleton-shimmer w-60"></div>
     </div>
 
-    <!-- Dashboard grid for results -->
+    <!-- Bento dashboard grid for results -->
     <div class="dashboard-grid">
-      <div>
+      <div class="dash-col dash-col--profile" style="container-type:inline-size">
         <!-- Placeholder for fetched user profile data -->
-        <section id="profile-container"></section>
+        <section id="profile-container" aria-label="User profile"></section>
+        <!-- Activity status bar with green dot -->
+        <div id="activity-bar" class="activity-bar hidden">
+          <span class="activity-dot"></span>
+          <span class="activity-text">Recently active</span>
+        </div>
         <!-- Language breakdown section -->
-        <section id="lang-stats-container" class="hidden"></section>
+        <section id="lang-stats-container" class="hidden" aria-label="Language statistics"></section>
       </div>
-      <div>
+      <div class="dash-col dash-col--repos" style="container-type:inline-size">
         <!-- Quick stats panel -->
-        <section id="quick-stats" class="hidden"></section>
+        <section id="quick-stats" class="hidden" aria-label="Quick developer statistics"></section>
         <!-- Placeholder for fetched repository list -->
-        <section id="repo-container"></section>
+        <section id="repo-container" aria-label="Repository list"></section>
       </div>
     </div>
   </main>
+  </div>
 
   <!-- Chart.js for data visualizations -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
