@@ -184,6 +184,98 @@ main {
   letter-spacing: 0.04em;
 }
 
+/* ── Repo list ── */
+
+/* Empty state */
+.empty-msg,
+.oversize-note {
+  text-align: center;
+  color: #586069;
+  padding: 0.5rem 0;
+}
+
+.oversize-note {
+  font-size: 0.85rem;
+  background: #fff5d6;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  margin-bottom: 1rem;
+}
+
+/* Sort controls row */
+.repo-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  color: #586069;
+}
+
+#sort-select {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: var(--white);
+  cursor: pointer;
+}
+
+/* Unordered list of repos */
+.repo-list {
+  list-style: none;
+}
+
+/* Individual repo card */
+.repo-item {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.repo-item:last-child {
+  border-bottom: none;
+}
+
+/* Repo name as a link */
+.repo-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.repo-name:hover {
+  text-decoration: underline;
+}
+
+/* Repo description */
+.repo-desc {
+  font-size: 0.9rem;
+  color: #586069;
+  margin: 0.3rem 0 0.5rem;
+  line-height: 1.4;
+}
+
+/* Bottom metadata row: language, stars, forks */
+.repo-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.82rem;
+  color: #586069;
+}
+
+.repo-lang::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
 /* Stack profile card vertically on narrow screens */
 @media (max-width: 600px) {
   .profile-card {
