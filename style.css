@@ -1,188 +1,347 @@
-/* Color palette and shared design tokens */
+/* ══════════════════════════════════════════════════════════════
+   GitHub Developer Explorer — Design System & Visual Overhaul
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Light theme (default) ── */
 :root {
-  --primary: #0366d6;       /* Main accent / interactive elements */
-  --secondary: #24292e;     /* Header and dark backgrounds */
-  --background: #f6f8fa;    /* Page background */
-  --text: #24292e;          /* Default text color */
-  --error: #d73a4a;         /* Error messages and alerts */
-  --white: #ffffff;         /* Card and container backgrounds */
-  --border: #e1e4e8;        /* Subtle border color */
+  --primary: #0969da;
+  --primary-glow: rgba(9, 105, 218, 0.18);
+  --bg: #e6eaef;
+  --bg-card: rgba(255, 255, 255, 0.88);
+  --bg-glass: rgba(255, 255, 255, 0.72);
+  --text: #1f2328;
+  --text-muted: #59636e;
+  --error: #cf222e;
+  --error-bg: rgba(207, 34, 46, 0.08);
+  --border: rgba(27, 31, 36, 0.18);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 6px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.1), 0 12px 32px rgba(0, 0, 0, 0.06);
+  --header-bg: rgba(36, 41, 46, 0.92);
+  --skeleton: #d0d7de;
+  --skeleton-shine: #e6eaef;
+  --hover-bg: rgba(9, 105, 218, 0.08);
+  --chart-bg: #ffffff;
 }
 
-/* Reset default browser spacing */
-* {
+/* ── Dark theme ── */
+[data-theme="dark"] {
+  --primary: #58a6ff;
+  --primary-glow: rgba(88, 166, 255, 0.15);
+  --bg: #0d1117;
+  --bg-card: rgba(22, 27, 34, 0.78);
+  --bg-glass: rgba(13, 17, 23, 0.6);
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --error: #f85149;
+  --error-bg: rgba(248, 81, 73, 0.1);
+  --border: rgba(240, 246, 252, 0.12);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 6px 16px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.25);
+  --header-bg: rgba(13, 17, 23, 0.9);
+  --skeleton: #21262d;
+  --skeleton-shine: #30363d;
+  --hover-bg: rgba(88, 166, 255, 0.08);
+  --chart-bg: #161b22;
+}
+
+/* ── Reset & Base ── */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Base body typography and background */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
-  background-color: var(--background);
+  background: var(--bg);
   color: var(--text);
   line-height: 1.6;
   min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* App header bar */
-header {
-  background-color: var(--secondary);
-  color: var(--white);
-  padding: 1.5rem 2rem;
-  text-align: center;
+/* ── Sticky Header ── */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--header-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s ease;
 }
 
-header h1 {
-  font-size: 1.75rem;
-  font-weight: 600;
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0.85rem 1rem;
 }
 
-/* Main content wrapper — centered with max width */
+.header-inner h1 {
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ── Theme Toggle ── */
+.theme-btn {
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.theme-btn:hover {
+  background: var(--hover-bg);
+  transform: scale(1.08);
+  box-shadow: var(--shadow);
+}
+
+/* ── Main Content ── */
 main {
-  max-width: 900px;
-  margin: 2rem auto;
+  max-width: 960px;
+  margin: clamp(1rem, 4vw, 2rem) auto;
   padding: 0 1rem;
 }
 
-/* Search bar row (input + button) */
+/* ── Search ── */
 .search-section {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 2rem;
 }
 
-/* Username text input */
 #search-input {
   flex: 1;
-  padding: 0.75rem 1rem;
+  padding: 0.7rem 1rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 1rem;
+  background: var(--bg-card);
+  color: var(--text);
   outline: none;
-  transition: border-color 0.2s;
+  backdrop-filter: blur(4px);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 #search-input:focus {
   border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
-/* Search trigger button */
 #search-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: var(--primary);
-  color: var(--white);
+  padding: 0.7rem 1.5rem;
+  background: var(--primary);
+  color: #ffffff;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
 }
 
 #search-btn:hover {
-  background-color: #0256b9;
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--primary-glow);
 }
 
-/* Secondary / Clear button */
+#search-btn:active {
+  transform: translateY(0);
+}
+
 .btn-secondary {
-  padding: 0.75rem 1.25rem;
-  background-color: var(--white);
+  padding: 0.7rem 1.25rem;
+  background: var(--bg-glass);
   color: var(--text);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .btn-secondary:hover {
-  background-color: #f3f4f6;
-  border-color: #c8ccd0;
+  background: var(--hover-bg);
+  border-color: var(--primary);
 }
 
-/* Utility: hide elements while preserving in DOM */
-.hidden {
-  display: none;
-}
+/* ── Utility ── */
+.hidden { display: none; }
 
-/* Loading spinner placeholder */
+/* ── Loading Spinner ── */
 #loading-spinner {
   text-align: center;
   padding: 2rem;
   font-size: 1.1rem;
-  color: #586069;
+  color: var(--text-muted);
 }
 
-/* Error message banner */
+/* ── Error Banner ── */
 #error-message {
   text-align: center;
-  padding: 1rem;
+  padding: 0.9rem 1.2rem;
   margin-bottom: 1rem;
-  background-color: #ffeef0;
+  background: var(--error-bg);
   color: var(--error);
-  border-radius: 6px;
-  border: 1px solid #f3c6cb;
+  border-radius: 8px;
+  border: 1px solid var(--error);
+  font-size: 0.95rem;
 }
 
-/* Card containers for profile, stats, and repo sections */
-#profile-container,
-#lang-stats-container,
-#repo-container {
-  background: var(--white);
+/* ── Skeleton Screens ── */
+.skeleton-card {
+  background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  backdrop-filter: blur(4px);
 }
 
-/* ── Profile card ── */
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
-/* Flex layout: avatar left, info center, stats right */
+.skeleton-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+}
+
+.w-30 { width: 30%; }
+.w-40 { width: 40%; }
+.w-50 { width: 50%; }
+.w-60 { width: 60%; }
+.w-70 { width: 70%; }
+.w-80 { width: 80%; }
+.w-90 { width: 90%; }
+
+.skeleton-pulse {
+  background: var(--skeleton);
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ── Dashboard Grid ── */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* ── Glassmorphism Cards ── */
+#profile-container,
+#lang-stats-container,
+#quick-stats,
+#repo-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: var(--shadow);
+  transition: background 0.3s, box-shadow 0.3s;
+  animation: slide-up 0.4s ease both;
+}
+
+/* ── Slide-up Animation ── */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Profile Card ── */
 .profile-card {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.2rem;
   flex-wrap: wrap;
 }
 
-/* Circular avatar image */
 .profile-avatar {
-  width: 96px;
-  height: 96px;
+  width: clamp(64px, 10vw, 96px);
+  height: clamp(64px, 10vw, 96px);
   border-radius: 50%;
   border: 2px solid var(--border);
+  transition: border-color 0.3s;
 }
 
-/* Middle column: name, username, bio */
 .profile-info {
   flex: 1;
-  min-width: 180px;
+  min-width: 160px;
 }
 
 .profile-name {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 0.2rem;
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  font-weight: 700;
+  margin-bottom: 0.15rem;
 }
 
 .profile-username {
-  color: #586069;
-  font-size: 1.1rem;
-  margin-bottom: 0.4rem;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  margin-bottom: 0.3rem;
 }
 
 .profile-bio {
-  font-size: 0.95rem;
-  color: #444d56;
+  font-size: 0.93rem;
+  color: var(--text-muted);
   line-height: 1.5;
 }
 
-/* Stats row: repos / followers / following */
 .profile-stats {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.2rem;
 }
 
 .stat {
@@ -191,136 +350,195 @@ main {
 
 .stat-value {
   display: block;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--primary);
 }
 
 .stat-label {
-  font-size: 0.8rem;
-  color: #586069;
+  font-size: 0.75rem;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
-/* ── Language stats ── */
+/* ── Quick Stats ── */
+#quick-stats { animation-delay: 0.1s; }
 
-/* Section heading */
-.lang-stats-heading {
-  font-size: 1.15rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: var(--text);
+.quick-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
 }
 
-/* Rows of language entries */
+.quick-stat-card {
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.9rem;
+  text-align: center;
+  backdrop-filter: blur(4px);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.quick-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.quick-stat-value {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.15rem;
+}
+
+.quick-stat-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.quick-stat-link {
+  font-size: 0.85rem;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  display: block;
+  margin-top: 0.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quick-stat-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Language Stats ── */
+#lang-stats-container { animation-delay: 0.2s; }
+
+.lang-stats-heading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Chart.js canvas wrapper */
+.lang-chart-wrapper {
+  max-width: 260px;
+  margin: 0 auto 1.2rem;
+}
+
 .lang-stats-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
-/* Single language row */
 .lang-stat-item {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.25rem;
 }
 
-/* Top row: name (with dot) + count */
 .lang-stat-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .lang-stat-name {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   font-weight: 500;
 }
 
-/* Colored dot indicator */
 .lang-stat-dot {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
 }
 
 .lang-stat-count {
-  color: #586069;
-  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
 }
 
-/* Background track of the bar */
 .lang-stat-bar-bg {
   width: 100%;
-  height: 10px;
-  background: #eef0f2;
-  border-radius: 5px;
+  height: 8px;
+  background: var(--skeleton);
+  border-radius: 4px;
   overflow: hidden;
 }
 
-/* Filled portion of the bar */
 .lang-stat-bar-fill {
   height: 100%;
-  border-radius: 5px;
-  transition: width 0.3s ease;
+  border-radius: 4px;
+  transition: width 0.4s ease;
 }
 
-/* ── Repo list ── */
+/* ── Repo List ── */
+#repo-container { animation-delay: 0.3s; }
 
-/* Empty state */
 .empty-msg,
 .oversize-note {
   text-align: center;
-  color: #586069;
+  color: var(--text-muted);
   padding: 0.5rem 0;
 }
 
 .oversize-note {
-  font-size: 0.85rem;
-  background: #fff5d6;
-  border-radius: 4px;
+  font-size: 0.82rem;
+  background: var(--bg-glass);
+  border-radius: 6px;
   padding: 0.4rem 0.8rem;
   margin-bottom: 1rem;
 }
 
-/* Sort controls row */
 .repo-controls {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 0.95rem;
-  color: #586069;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }
 
 #sort-select {
-  padding: 0.35rem 0.6rem;
+  padding: 0.3rem 0.5rem;
   border: 1px solid var(--border);
   border-radius: 6px;
-  font-size: 0.9rem;
-  background: var(--white);
+  font-size: 0.85rem;
+  background: var(--bg-glass);
+  color: var(--text);
   cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: border-color 0.2s;
 }
 
-/* Unordered list of repos */
+#sort-select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
 .repo-list {
   list-style: none;
 }
 
-/* Individual repo card */
 .repo-item {
-  padding: 1rem;
+  padding: 0.9rem 0.8rem;
   margin: 0 -0.5rem;
-  border-radius: 6px;
+  border-radius: 8px;
   border-bottom: 1px solid var(--border);
-  transition: background-color 0.15s ease;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
 }
 
 .repo-item:last-child {
@@ -328,51 +546,88 @@ main {
 }
 
 .repo-item:hover {
-  background-color: #f6f8fa;
+  background: var(--hover-bg);
+  transform: translateX(3px);
+  box-shadow: none;
 }
 
-/* Repo name as a link */
 .repo-name {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--primary);
   text-decoration: none;
+  transition: opacity 0.15s;
 }
 
 .repo-name:hover {
+  opacity: 0.8;
   text-decoration: underline;
 }
 
-/* Repo description */
 .repo-desc {
-  font-size: 0.9rem;
-  color: #586069;
-  margin: 0.3rem 0 0.5rem;
+  font-size: 0.87rem;
+  color: var(--text-muted);
+  margin: 0.2rem 0 0.4rem;
   line-height: 1.4;
 }
 
-/* Bottom metadata row: language, stars, forks */
 .repo-meta {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  font-size: 0.82rem;
-  color: #586069;
+  gap: 0.9rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.repo-lang {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .repo-lang::before {
   content: '';
-  display: inline-block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
   background: currentColor;
-  margin-right: 4px;
-  vertical-align: middle;
+  flex-shrink: 0;
 }
 
-/* Stack profile card vertically on narrow screens */
+/* Language color badges */
+.repo-lang-badge {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* ── Responsive ── */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mobile */
 @media (max-width: 600px) {
+  .search-section {
+    flex-direction: column;
+  }
+
+  #search-btn,
+  .btn-secondary {
+    width: 100%;
+  }
+
   .profile-card {
     flex-direction: column;
     text-align: center;
@@ -382,20 +637,23 @@ main {
     width: 100%;
     justify-content: center;
   }
+
+  .quick-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lang-chart-wrapper {
+    max-width: 200px;
+  }
 }
 
-/* Responsive: stack search bar and shrink text on small screens */
-@media (max-width: 600px) {
-  header h1 {
-    font-size: 1.35rem;
+/* Very small screens */
+@media (max-width: 380px) {
+  .header-inner h1 {
+    font-size: 1rem;
   }
 
-  .search-section {
-    flex-direction: column;
-  }
-
-  #search-btn,
-  .btn-secondary {
-    width: 100%;
+  .repo-item {
+    padding: 0.7rem 0.5rem;
   }
 }

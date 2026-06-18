@@ -1,6 +1,6 @@
 <!-- Main HTML structure for GitHub Developer Explorer -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +8,12 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- App header with title -->
-  <header>
-    <h1>GitHub Developer Explorer</h1>
+  <!-- Sticky header with title and theme toggle -->
+  <header class="app-header">
+    <div class="header-inner">
+      <h1>GitHub Developer Explorer</h1>
+      <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme">🌙</button>
+    </div>
   </header>
 
   <main>
@@ -26,14 +29,43 @@
     <!-- Error display area (hidden by default) -->
     <div id="error-message" class="hidden"></div>
 
-    <!-- Placeholder for fetched user profile data -->
-    <section id="profile-container"></section>
-    <!-- Language breakdown section -->
-    <section id="lang-stats-container" class="hidden"></section>
-    <!-- Placeholder for fetched repository list -->
-    <section id="repo-container"></section>
+    <!-- Skeleton screens shown while fetching data -->
+    <div id="skeleton-profile" class="skeleton-card hidden">
+      <div class="skeleton-row">
+        <div class="skeleton-avatar skeleton-pulse"></div>
+        <div class="skeleton-lines">
+          <div class="skeleton-line skeleton-pulse w-50"></div>
+          <div class="skeleton-line skeleton-pulse w-30"></div>
+          <div class="skeleton-line skeleton-pulse w-70"></div>
+        </div>
+      </div>
+    </div>
+    <div id="skeleton-repos" class="skeleton-card hidden">
+      <div class="skeleton-line skeleton-pulse w-40"></div>
+      <div class="skeleton-line skeleton-pulse w-90"></div>
+      <div class="skeleton-line skeleton-pulse w-80"></div>
+      <div class="skeleton-line skeleton-pulse w-60"></div>
+    </div>
+
+    <!-- Dashboard grid for results -->
+    <div class="dashboard-grid">
+      <div>
+        <!-- Placeholder for fetched user profile data -->
+        <section id="profile-container"></section>
+        <!-- Language breakdown section -->
+        <section id="lang-stats-container" class="hidden"></section>
+      </div>
+      <div>
+        <!-- Quick stats panel -->
+        <section id="quick-stats" class="hidden"></section>
+        <!-- Placeholder for fetched repository list -->
+        <section id="repo-container"></section>
+      </div>
+    </div>
   </main>
 
+  <!-- Chart.js for data visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <!-- API service layer (loaded first so main.js can use it) -->
   <script src="src/js/api.js"></script>
   <!-- Data transformation utilities -->
