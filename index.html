@@ -27,12 +27,16 @@
 
     <!-- Placeholder for fetched user profile data -->
     <section id="profile-container"></section>
+    <!-- Language breakdown section -->
+    <section id="lang-stats-container" class="hidden"></section>
     <!-- Placeholder for fetched repository list -->
     <section id="repo-container"></section>
   </main>
 
   <!-- API service layer (loaded first so main.js can use it) -->
   <script src="src/js/api.js"></script>
+  <!-- Data transformation utilities -->
+  <script src="src/js/stats.js"></script>
   <!-- Entry point for all JavaScript logic -->
   <script src="src/js/main.js"></script>
 </body>
