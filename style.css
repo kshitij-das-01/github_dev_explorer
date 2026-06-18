@@ -1,0 +1,134 @@
+/* Color palette and shared design tokens */
+:root {
+  --primary: #0366d6;       /* Main accent / interactive elements */
+  --secondary: #24292e;     /* Header and dark backgrounds */
+  --background: #f6f8fa;    /* Page background */
+  --text: #24292e;          /* Default text color */
+  --error: #d73a4a;         /* Error messages and alerts */
+  --white: #ffffff;         /* Card and container backgrounds */
+  --border: #e1e4e8;        /* Subtle border color */
+}
+
+/* Reset default browser spacing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base body typography and background */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+  background-color: var(--background);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* App header bar */
+header {
+  background-color: var(--secondary);
+  color: var(--white);
+  padding: 1.5rem 2rem;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+/* Main content wrapper — centered with max width */
+main {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Search bar row (input + button) */
+.search-section {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Username text input */
+#search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#search-input:focus {
+  border-color: var(--primary);
+}
+
+/* Search trigger button */
+#search-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#search-btn:hover {
+  background-color: #0256b9;
+}
+
+/* Utility: hide elements while preserving in DOM */
+.hidden {
+  display: none;
+}
+
+/* Loading spinner placeholder */
+#loading-spinner {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1rem;
+  color: #586069;
+}
+
+/* Error message banner */
+#error-message {
+  text-align: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #ffeef0;
+  color: var(--error);
+  border-radius: 6px;
+  border: 1px solid #f3c6cb;
+}
+
+/* Card containers for profile and repo sections */
+#profile-container,
+#repo-container {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Responsive: stack search bar and shrink text on small screens */
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 1.35rem;
+  }
+
+  .search-section {
+    flex-direction: column;
+  }
+
+  #search-btn {
+    width: 100%;
+  }
+}

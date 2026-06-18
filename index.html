@@ -1,0 +1,37 @@
+<!-- Main HTML structure for GitHub Developer Explorer -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Developer Explorer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- App header with title -->
+  <header>
+    <h1>GitHub Developer Explorer</h1>
+  </header>
+
+  <main>
+    <!-- Search bar and trigger button -->
+    <section class="search-section">
+      <input type="text" id="search-input" placeholder="Enter GitHub username">
+      <button id="search-btn">Search</button>
+    </section>
+
+    <!-- Loading indicator (hidden by default) -->
+    <div id="loading-spinner" class="hidden">Loading...</div>
+    <!-- Error display area (hidden by default) -->
+    <div id="error-message" class="hidden"></div>
+
+    <!-- Placeholder for fetched user profile data -->
+    <section id="profile-container"></section>
+    <!-- Placeholder for fetched repository list -->
+    <section id="repo-container"></section>
+  </main>
+
+  <!-- Entry point for all JavaScript logic -->
+  <script src="src/js/main.js"></script>
+</body>
+</html>
