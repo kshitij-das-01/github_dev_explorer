@@ -3,6 +3,7 @@
 /* ── DOM references ── */
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
+const clearBtn = document.getElementById('clear-btn');
 const profileContainer = document.getElementById('profile-container');
 const repoContainer = document.getElementById('repo-container');
 const langStatsContainer = document.getElementById('lang-stats-container');
@@ -32,6 +33,16 @@ function clearResults() {
   repoContainer.innerHTML = '';
   langStatsContainer.innerHTML = '';
   langStatsContainer.classList.add('hidden');
+}
+
+/* Reset the app to its initial empty state */
+function resetApp() {
+  setError(null);
+  setLoading(false);
+  clearResults();
+  searchInput.value = '';
+  allRepos = [];
+  currentSort = 'name';
 }
 
 /* ── Render user profile card ── */
@@ -196,6 +207,7 @@ async function handleSearch() {
 
 /* ── Event binding ── */
 searchBtn.addEventListener('click', handleSearch);
+clearBtn.addEventListener('click', resetApp);
 searchInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     handleSearch();
