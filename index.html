@@ -20,9 +20,9 @@
   <main role="main">
     <!-- Search bar and trigger buttons -->
     <section class="search-section" aria-label="Search for a GitHub user">
-      <input type="text" id="search-input" placeholder="Enter GitHub username" aria-label="GitHub username">
+      <input type="search" id="search-input" placeholder="Enter GitHub username" aria-label="GitHub username" inputmode="search" enterkeyhint="search" autocomplete="off">
       <button id="search-btn">Search</button>
-      <button id="clear-btn" class="btn-secondary">Clear</button>
+      <button id="clear-btn" class="btn-secondary" aria-label="Clear search">✕</button>
     </section>
 
     <!-- GitHub token settings (collapsible) -->
