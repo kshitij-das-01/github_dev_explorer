@@ -1,3 +1,4 @@
 # GitHub Developer Explorer project
 # Ignore generated prompts folder
 prompts/
+.vscode
